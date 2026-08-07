@@ -47,6 +47,8 @@ fn main() {
     if let Err(err) = result {
         eprintln!("{} {}", style("✘").red(), err);
         std::process::exit(err.exit_code());
+    }else {
+        std::process::exit(0);
     }
 }
 
@@ -103,7 +105,7 @@ fn cmd_hash(args: cli::HashArgs) -> Result<()> {
 
         // 進度條（單次掃描）
         if !args.quiet {
-            eprintln!(
+            println!(
                 "{} 單次掃描計算 {} 種演算法: {}",
                 style("ℹ").cyan(),
                 algos.len(),
@@ -247,12 +249,12 @@ fn save_hash_results(
         Some(out) => {
             let out_path: &Path = out.as_path();
             save_hash_file(hash_data, out_path, path.parent().unwrap_or(&current_dir))?;
-            eprintln!("{} 已儲存: {}", style("✔").green(), out.display());
+            println!("{} 已儲存: {}", style("✔").green(), out.display());
         }
         None => {
             let output_path = current_dir.join(&default_name);
             save_hash_file(hash_data, &output_path, path.parent().unwrap_or(&current_dir))?;
-            eprintln!("{} 已儲存: {}", style("✔").green(), output_path.display());
+            println!("{} 已儲存: {}", style("✔").green(), output_path.display());
         }
     }
     Ok(())
@@ -293,7 +295,7 @@ fn cmd_verify(args: cli::VerifyArgs) -> Result<()> {
     });
 
     if !args.quiet {
-        eprintln!(
+        println!(
             "{} 驗證 {} （演算法: {} 根目錄: {}）",
             style("ℹ").cyan(),
             hashfile.display(),
@@ -332,7 +334,7 @@ fn cmd_verify(args: cli::VerifyArgs) -> Result<()> {
             Ok((path, true, _)) => {
                 matched += 1;
                 if !args.quiet {
-                    eprintln!("{} {}", style("✔").green(), path.display());
+                    println!("{} {}", style("✔").green(), path.display());
                 }
             }
             Ok((path, false, actual)) => {
@@ -350,7 +352,7 @@ fn cmd_verify(args: cli::VerifyArgs) -> Result<()> {
         }
     }
 
-    eprintln!(
+    println!(
         "{} 驗證完成: {total} 個檔案, {matched} 匹配, {mismatched} 不匹配, {errors} 錯誤",
         if mismatched == 0 && errors == 0 { style("✔").green() } else { style("✘").red() }
     );
@@ -379,7 +381,7 @@ fn cmd_json(args: cli::JsonArgs) -> Result<()> {
     }
 
     if !args.quiet {
-        eprintln!("{} 掃描目錄結構: {}", style("ℹ").cyan(), path.display());
+        println!("{} 掃描目錄結構: {}", style("ℹ").cyan(), path.display());
     }
 
     let node = build_file_node(path)?;
@@ -400,14 +402,14 @@ fn cmd_json(args: cli::JsonArgs) -> Result<()> {
         Some(out) => {
             save_file_node_json(&container, out.as_path())?;
             if !args.quiet {
-                eprintln!("{} 已儲存: {}", style("✔").green(), out.display());
+                println!("{} 已儲存: {}", style("✔").green(), out.display());
             }
         }
         None => {
             let output_path = current_dir.join(&default_name);
             save_file_node_json(&container, &output_path)?;
             if !args.quiet {
-                eprintln!("{} 已儲存: {}", style("✔").green(), output_path.display());
+                println!("{} 已儲存: {}", style("✔").green(), output_path.display());
             }
         }
     }
@@ -450,7 +452,7 @@ fn cmd_txt(args: cli::TxtArgs) -> Result<()> {
             let mut writer = BufWriter::new(file);
             write_tree(&mut writer, path, &option)?;
             if !args.quiet {
-                eprintln!("{} 已儲存: {}", style("✔").green(), out.display());
+                println!("{} 已儲存: {}", style("✔").green(), out.display());
             }
         }
         None => {
@@ -459,7 +461,7 @@ fn cmd_txt(args: cli::TxtArgs) -> Result<()> {
             let mut writer = BufWriter::new(file);
             write_tree(&mut writer, path, &option)?;
             if !args.quiet {
-                eprintln!("{} 已儲存: {}", style("✔").green(), output_path.display());
+                println!("{} 已儲存: {}", style("✔").green(), output_path.display());
             }
         }
     }

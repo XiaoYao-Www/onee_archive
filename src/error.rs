@@ -53,17 +53,21 @@ pub enum OneeError {
 }
 
 impl OneeError {
-    /// 根據錯誤類型回傳 POSIX exit code
+    /// 根據錯誤類型回傳符合 POSIX / CLI 慣例的 exit code
     #[must_use]
     pub const fn exit_code(&self) -> i32 {
         match self {
-            Self::HashMismatch { .. } => 1,
-            Self::Io(_) | Self::Serde(_) => 2,
+            // 1: 通用執行失敗（Hash 校驗不符、I/O 讀寫失敗、資料序列化失敗）
+            Self::HashMismatch { .. } | Self::Io(_) | Self::Serde(_) => 1,
+
+            // 2: 命令行參數錯誤（符合 POSIX / Shell 將 2 留給 Usage Error 的慣例）
+            Self::ArgumentError(_) => 2,
+
+            // 3: 數據解析與領域邏輯錯誤（自訂業務錯誤）
             Self::InvalidPath(_)
             | Self::UnsupportedLength { .. }
             | Self::UnsupportedAlgorithm(_)
-            | Self::HashFileParseError { .. }
-            | Self::ArgumentError(_) => 3,
+            | Self::HashFileParseError { .. } => 3,
         }
     }
 }
